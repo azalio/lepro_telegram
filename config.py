@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 from logging.handlers import SysLogHandler
 import logging
 

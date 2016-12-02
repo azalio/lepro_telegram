@@ -43,7 +43,7 @@ def split_text_to_chanks(text, size, result=None):
         result.append(text)
         return result
 
-    while text[size:size + 2] != '. ' and size > 0:
+    while text[size:size + 2] != '. ' and size > 3500:
         size = size - 1
     result.append(text[0:size + 2])
     rest = text[size + 2:]

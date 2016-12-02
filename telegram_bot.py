@@ -5,7 +5,6 @@ import os
 import time
 import telepot
 import requests
-import socket
 
 import config
 import mongo
@@ -55,14 +54,14 @@ def handle(msg):
         last_name = msg.get('chat', {}).get('last_name', '')
         first_name = msg.get('chat', {}).get('first_name', '')
         username = msg.get('chat', {}).get('username', '')
-        update_user_info = mongo.update_user_info(chat_id, collection, last_name=last_name,
+        mongo.update_user_info(chat_id, collection, last_name=last_name,
                                                   first_name=first_name,
                                                   username=username)
     except Exception as exp:
-        config.logger.exception("Error: Can't update user info")
+        config.logger.exception("Error: Can't update user info {}".format(exp))
     oauth = mongo.check_user_id(chat_id, collection)
     if oauth:
-        user_exist_and_ok = True
+        # user_exist_and_ok = True
         try:
             entities = msg.get('entities', None)[0]
             # print(entities)
@@ -81,7 +80,7 @@ def handle(msg):
         except Exception as exp:
             config.logger.exception("Error: message analysis")
     else:
-        user_exist_and_ok = False
+        # user_exist_and_ok = False
         try:
             entities = msg.get('entities', None)[0]
             # print(entities)

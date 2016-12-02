@@ -45,6 +45,7 @@ def add_to_lepra_posts(post_id, user_id, collection):
     cursor = collection.update_one({"post_id": post_id},
                                    {"$addToSet": {"users": user_id}},
                                    upsert=True)
+    return bool(cursor)
 
 
 def check_lepra_post(post_id, user_id, collection):
