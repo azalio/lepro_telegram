@@ -1,0 +1,17 @@
+{
+  "lepra": {
+    "client_id": "CLIENT_ID",
+    "sec_id": "SEC_ID"
+	},
+  "telegram": {
+    "token" : "TELEGTAM_TOKEN",
+    "max_message_size": 4096
+  },
+  "mongo": {
+    "host": "localhost",
+    "port": "27017",
+    "db": "DB_NAME",
+    "collection": "COLL_NAME",
+    "posts_collection": "COLL_NAME_FOR_POSTS"
+  }
+}
