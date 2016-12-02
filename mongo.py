@@ -45,6 +45,7 @@ def add_to_lepra_posts(post_id, user_id, collection):
     cursor = collection.update_one({"post_id": post_id},
                                    {"$addToSet": {"users": user_id}},
                                    upsert=True)
+    return bool(cursor)
 
 
 def check_lepra_post(post_id, user_id, collection):
@@ -59,6 +60,7 @@ def check_lepra_post(post_id, user_id, collection):
 
 def user_to_prepare(user_id, collection):
     result = collection.update_one({"user_id": user_id}, {"$set": {"status": "prepare"}})
+    return bool(result)
 
 
 def update_user_settings(user_id, command, collection):

@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import requests
-import json
-from logging.handlers import SysLogHandler
-import logging
-import socket
 import os
 import sys
 
@@ -23,7 +19,7 @@ def get_feed(oauth, feed_type, threshold_rating):
     try:
         result = requests.get(url, headers=headers)
     except Exception as exp:
-        config.logger.exception("Can't get url")
+        config.logger.exception("Can't get url {}".format(exp))
         return False
     if result.status_code == 200:
         return result.json()

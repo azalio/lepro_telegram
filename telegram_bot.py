@@ -113,13 +113,15 @@ def catch_bot_command(msg, chat_id):
     try:
         command_list = msg['text'].split()
         command = command_list[0].lower().lstrip('/')
-        # print(command)
         if command == 'start' and len(command_list) > 1:
             oauth_key = command_list[1]
-            mongo.update_user_oauth(chat_id, oauth_key, collection)
-            oauth = mongo.check_user_id(chat_id, collection)
-            result['command'] = command
-            result['oauth'] = oauth
+            if oauth_key == 'start':
+                get_user_oauth(chat_id, client_id, bot)
+            else:
+                mongo.update_user_oauth(chat_id, oauth_key, collection)
+                oauth = mongo.check_user_id(chat_id, collection)
+                result['command'] = command
+                result['oauth'] = oauth
         elif command == 'start' and len(command_list) < 2:
             text = u'Команда /start должна вызываться вместе с токеном от сайта.'
             send_message(text, 'text', bot, chat_id)
