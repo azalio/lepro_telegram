@@ -86,7 +86,4 @@ def update_user_info(user_id, collection, **kwargs):
         "$set": kwargs,
         "$inc": {"count": 1}})
     logging.debug(result.raw_result)
-    if result.matched_count == 1:
-        return True
-    else:
-        return False
+    return bool(result.matched_count == 1)

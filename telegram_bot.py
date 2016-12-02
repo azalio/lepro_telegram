@@ -95,8 +95,6 @@ def handle(msg):
                             oauth = result.get('oauth', None)
         except Exception as exp:
             config.logger.exception("Error: message analysis")
-            pass
-        # print('User don\'t exits')
         if not oauth:
             get_user_oauth(chat_id, client_id, bot)
         else:
