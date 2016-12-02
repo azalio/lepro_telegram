@@ -23,7 +23,7 @@ def get_feed(oauth, feed_type, threshold_rating):
     try:
         result = requests.get(url, headers=headers)
     except Exception as exp:
-        logger.exception("Can't get url")
+        config.logger.exception("Can't get url")
         return False
     if result.status_code == 200:
         return result.json()
@@ -31,7 +31,7 @@ def get_feed(oauth, feed_type, threshold_rating):
         result = 'deny'
         return result
     else:
-        logger.debug("Error: in status_code: {}".format(result.status_code))
+        config.logger.debug("Error: in status_code: {}".format(result.status_code))
         return False
 
 
@@ -89,15 +89,5 @@ if __name__ == '__main__':
     max_message_size = config.conf['telegram']['max_message_size']
 
     client_id = config.conf['lepra']['client_id']
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    try:
-        syslog = SysLogHandler('/dev/log')
-    except socket.error:
-        syslog = SysLogHandler('/var/run/syslog')
-    formatter = logging.Formatter(u'%(filename)s[LINE:%(lineno)d] %(message)s')
-    syslog.setFormatter(formatter)
-    logger.addHandler(syslog)
 
     main()

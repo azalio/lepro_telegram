@@ -1,6 +1,8 @@
 import json
 import os
 import sys
+from logging.handlers import SysLogHandler
+import logging
 
 
 mydir = os.path.dirname(__file__)
@@ -14,3 +16,13 @@ except IOError as exp:
 except ValueError as exp:
     print('Please, write config')
     exit(1)
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+try:
+    syslog = SysLogHandler('/dev/log')
+except socket.error:
+    syslog = SysLogHandler('/var/run/syslog')
+formatter = logging.Formatter(u'%(filename)s[LINE:%(lineno)d] %(message)s')
+syslog.setFormatter(formatter)
+logger.addHandler(syslog)

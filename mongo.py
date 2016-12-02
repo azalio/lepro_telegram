@@ -50,10 +50,11 @@ def add_to_lepra_posts(post_id, user_id, collection):
 def check_lepra_post(post_id, user_id, collection):
     cursor = collection.find_one({"post_id": post_id}, {"_id": 0, "post_id": 0})
     if cursor:
-        if user_id in cursor['users']:
-            return True
-        else:
-            return False
+        return bool(user_id in cursor['users'])
+        # if user_id in cursor['users']:
+        #    return True
+        # else:
+        #    return False
 
 
 def user_to_prepare(user_id, collection):
@@ -71,18 +72,12 @@ def update_user_settings(user_id, command, collection):
 
 def delete_user(user_id, collection):
     cursor = collection.delete_one({"user_id": user_id})
-    if cursor.deleted_count == 1:
-        return True
-    else:
-        return False
+    return bool(cursor.deleted_count == 1)
 
 
 def update_user_oauth(user_id, text, collection):
     result = collection.update_one({"user_id": user_id}, {"$set": {"status": "complete", "lepra_oauth": text}})
-    if result.matched_count == 1:
-        return True
-    else:
-        return False
+    return bool(result.matched_count == 1)
 
 
 def update_user_info(user_id, collection, **kwargs):

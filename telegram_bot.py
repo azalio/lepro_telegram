@@ -5,8 +5,6 @@ import os
 import time
 import telepot
 import requests
-from logging.handlers import SysLogHandler
-import logging
 import socket
 
 import config
@@ -25,26 +23,28 @@ def get_user_oauth(chat_id, client_id, bot):
     send_message(data, 'text', bot, chat_id)
 
 
-def send_message(data, type, bot, chat_id=12452435):
+def send_message(data, message_type, bot, chat_id=12452435):
     try:
-        if type == 'text':
+        if message_type == 'text':
             chunks = util.split_text_to_chanks(data, 4095, [])
             for chunk in chunks:
                 # print(len(chunk))
                 bot.sendMessage(chat_id, chunk)
-        if type == 'photo':
+        if message_type == 'photo':
             with open(data, 'r') as f:
                 bot.sendPhoto(chat_id, f)
     except telepot.exception.TooManyRequestsError as exp:
-        logger.exception("Error: Too Many Requests")
+        config.logger.exception("Error: Too Many Requests")
         sleep = exp[-1]['parameters']['retry_after']
-        logger.debug("Too fast, sleeping: {}".format(sleep))
+        config.logger.debug("Too fast, sleeping: {}".format(sleep))
         # print(data)
         time.sleep(sleep)
-        return send_message(data, type, bot, chat_id)
+        return send_message(data, message_type, bot, chat_id)
     except requests.exceptions.ReadTimeout as exp:
-        logger.exception("Error: Read Timeout")
+        config.logger.exception("Error: Read Timeout")
         return False
+    except telepot.exception.TelegramError as exp:
+        config.logger.exception("Error: TelegramError")
     else:
         return True
 
@@ -59,8 +59,7 @@ def handle(msg):
                                                   first_name=first_name,
                                                   username=username)
     except Exception as exp:
-        logger.exception("Error: Can't update user info")
-        pass
+        config.logger.exception("Error: Can't update user info")
     oauth = mongo.check_user_id(chat_id, collection)
     if oauth:
         user_exist_and_ok = True
@@ -74,13 +73,13 @@ def handle(msg):
                     result = catch_bot_command(msg, chat_id)
                     # print(result)
         except TypeError as exp:
-            logger.exception("Error: TypeError")
+            config.logger.exception("Error: TypeError")
             text = u"К сожалению, я не настолько умный.\nЯ понимаю только "\
                    u"три команды, о которых вы можете узнать выполнив команду:\n"\
                    u"/help"
             send_message(text, 'text', bot, chat_id)
         except Exception as exp:
-            logger.exception("Error: message analysis")
+            config.logger.exception("Error: message analysis")
     else:
         user_exist_and_ok = False
         try:
@@ -94,8 +93,8 @@ def handle(msg):
                     if result:
                         if result['command'] == 'start':
                             oauth = result.get('oauth', None)
-        except:
-            logger.exception("Error: message analysis")
+        except Exception as exp:
+            config.logger.exception("Error: message analysis")
             pass
         # print('User don\'t exits')
         if not oauth:
@@ -162,7 +161,7 @@ def catch_bot_command(msg, chat_id):
         elif command in settings_command:
             mongo.update_user_settings(chat_id, command, collection)
     except Exception as exp:
-        logger.exception("Error: in catch_bot_command function")
+        config.logger.exception("Error: in catch_bot_command function")
         return False
     else:
         return result
@@ -186,16 +185,6 @@ if __name__ == '__main__':
 
     text_documents = ['text', 'contact', 'location', 'venue']
     file_documents = ['photo', 'document', 'audio', 'video', 'voice']
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    try:
-        syslog = SysLogHandler('/dev/log')
-    except socket.error:
-        syslog = SysLogHandler('/var/run/syslog')
-    formatter = logging.Formatter(u'%(filename)s[LINE:%(lineno)d] %(message)s')
-    syslog.setFormatter(formatter)
-    logger.addHandler(syslog)
 
     bot = create_bot(KEY)
     bot.message_loop(handle)
