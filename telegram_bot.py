@@ -58,7 +58,8 @@ def handle(msg):
         update_user_info = mongo.update_user_info(chat_id, collection, last_name=last_name,
                                                   first_name=first_name,
                                                   username=username)
-    except:
+    except Exception as exp:
+        logger.exception("Error: Can't update user info")
         pass
     oauth = mongo.check_user_id(chat_id, collection)
     if oauth:
@@ -78,10 +79,8 @@ def handle(msg):
                    u"три команды, о которых вы можете узнать выполнив команду:\n"\
                    u"/help"
             send_message(text, 'text', bot, chat_id)
-            pass
         except Exception as exp:
             logger.exception("Error: message analysis")
-            pass
     else:
         user_exist_and_ok = False
         try:

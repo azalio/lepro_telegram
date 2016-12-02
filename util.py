@@ -36,7 +36,8 @@ def strip_tags(html):
     return s.get_data()
 
 
-def split_text_to_chanks(text, size, result=[]):
+def split_text_to_chanks(text, size, result=None):
+    result = result or []
     max_size = size
     if len(text) <= size:
         result.append(text)
