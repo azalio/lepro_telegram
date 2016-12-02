@@ -5,6 +5,7 @@ import os
 import time
 import telepot
 import requests
+import socket
 
 import config
 import mongo
@@ -54,14 +55,14 @@ def handle(msg):
         last_name = msg.get('chat', {}).get('last_name', '')
         first_name = msg.get('chat', {}).get('first_name', '')
         username = msg.get('chat', {}).get('username', '')
-        mongo.update_user_info(chat_id, collection, last_name=last_name,
+        update_user_info = mongo.update_user_info(chat_id, collection, last_name=last_name,
                                                   first_name=first_name,
                                                   username=username)
     except Exception as exp:
-        config.logger.exception("Error: Can't update user info {}".format(exp))
+        config.logger.exception("Error: Can't update user info")
     oauth = mongo.check_user_id(chat_id, collection)
     if oauth:
-        # user_exist_and_ok = True
+        user_exist_and_ok = True
         try:
             entities = msg.get('entities', None)[0]
             # print(entities)
@@ -80,7 +81,7 @@ def handle(msg):
         except Exception as exp:
             config.logger.exception("Error: message analysis")
     else:
-        # user_exist_and_ok = False
+        user_exist_and_ok = False
         try:
             entities = msg.get('entities', None)[0]
             # print(entities)
@@ -112,13 +113,15 @@ def catch_bot_command(msg, chat_id):
     try:
         command_list = msg['text'].split()
         command = command_list[0].lower().lstrip('/')
-        # print(command)
         if command == 'start' and len(command_list) > 1:
             oauth_key = command_list[1]
-            mongo.update_user_oauth(chat_id, oauth_key, collection)
-            oauth = mongo.check_user_id(chat_id, collection)
-            result['command'] = command
-            result['oauth'] = oauth
+            if oauth_key == 'start':
+                get_user_oauth(chat_id, client_id, bot)
+            else:
+                mongo.update_user_oauth(chat_id, oauth_key, collection)
+                oauth = mongo.check_user_id(chat_id, collection)
+                result['command'] = command
+                result['oauth'] = oauth
         elif command == 'start' and len(command_list) < 2:
             text = u'Команда /start должна вызываться вместе с токеном от сайта.'
             send_message(text, 'text', bot, chat_id)

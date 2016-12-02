@@ -63,7 +63,6 @@ def main():
                         data = post[key][0]['href']
                         send_to_user = send_to_user + data
                 if send_to_user:
-                    print(send_to_user)   
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
