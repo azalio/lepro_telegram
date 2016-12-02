@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from random import randint
 import sys
 import os
 import time
@@ -128,9 +129,11 @@ def catch_bot_command(msg, chat_id):
         elif command == 'stop':
             result = mongo.delete_user(chat_id, collection)
             if result:
+                images = [x for x in os.listdir('img/') if 'stop' in x]
+                num = randint(1, len(images))
                 text = u'Рады были вас видеть!'
                 send_message(text, 'text', bot, chat_id)
-                data = "img/stop.jpg"
+                data = "img/stop{}.jpg".format(num)
                 send_message(data, 'photo', bot, chat_id)
         elif command == 'help':
             text = u"""Поддерживаются следующие команды:
