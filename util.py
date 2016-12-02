@@ -20,6 +20,10 @@ class MLStripper(HTMLParser):
             for attr in attrs:
                 if attr[0] == 'src':
                     self.add_to_data(attr[1])
+        elif tag == 'source':
+            for attr in attrs:
+                if attr[0] == 'src':
+                    self.add_to_data(attr[1])
         elif tag == 'br':
             self.add_to_data('\n')
 

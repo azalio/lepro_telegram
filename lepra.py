@@ -51,8 +51,11 @@ def main():
             for post in feed[key]:
                 send_to_user = ''
                 post_id = post['id']
+                config.logger.debug("User id: {}".format(chat_id))
+                config.logger.debug("Post id: {}".format(post_id))
                 read = mongo.check_lepra_post(post_id, chat_id, posts_collection)
                 if read:
+                    config.logger.debug("User {} already read post: {}".format(chat_id, post_id))
                     continue
                 for key in post:
                     if key == 'body':
