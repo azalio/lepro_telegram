@@ -48,7 +48,6 @@ def main():
             telegram_bot.get_user_oauth(chat_id, client_id, bot)
             continue
         for key in feed:
-            # print key
             for post in feed[key]:
                 send_to_user = ''
                 post_id = post['id']
@@ -71,7 +70,8 @@ def main():
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         if result == 'ban':
-                            mongo.delete_user(chat_id, collection)
+                            user_to_prepare(chat_id, collection)
+                            continue
                         else:
                             mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
 

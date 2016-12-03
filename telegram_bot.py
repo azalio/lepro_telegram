@@ -31,23 +31,22 @@ def send_message(data, message_type, bot, chat_id=12452435):
         if message_type == 'photo':
             with open(data, 'r') as f:
                 bot.sendPhoto(chat_id, f)
-    except telepot.exception.TooManyRequestsError as exp:
+    except telepot.exception.TooManyRequestsError:
         config.logger.exception("Error: Too Many Requests")
         sleep = exp[-1]['parameters']['retry_after']
         config.logger.debug("Too fast, sleeping: {}".format(sleep))
-        # print(data)
         time.sleep(sleep)
         return send_message(data, message_type, bot, chat_id)
-    except telepot.exception.BotWasBlockedError as exp:
-        config.logger.exception("Error: User blocked bot".format(exp))
+    except telepot.exception.BotWasBlockedError:
+        config.logger.exception("Error: User blocked bot")
         return 'ban'
-    except requests.exceptions.ReadTimeout as exp:
+    except requests.exceptions.ReadTimeout:
         config.logger.exception("Error: Read Timeout")
         return False
-    except requests.exceptions.ConnectionError as exp:
-        config.logger.exception("Error: Conn error {}".format(exp))
+    except requests.exceptions.ConnectionError:
+        config.logger.exception("Error: Conn error")
         return False
-    except telepot.exception.TelegramError as exp:
+    except telepot.exception.TelegramError:
         config.logger.exception("Error: TelegramError")
     else:
         return True
