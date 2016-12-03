@@ -70,7 +70,10 @@ def main():
                     time.sleep(4)
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
-                        mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
+                        if result == 'ban':
+                            mongo.delete_user(chat_id, collection)
+                        else:
+                            mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
 
 
 if __name__ == '__main__':

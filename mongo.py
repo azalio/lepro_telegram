@@ -52,10 +52,6 @@ def check_lepra_post(post_id, user_id, collection):
     cursor = collection.find_one({"post_id": post_id}, {"_id": 0, "post_id": 0})
     if cursor:
         return bool(user_id in cursor['users'])
-        # if user_id in cursor['users']:
-        #    return True
-        # else:
-        #    return False
 
 
 def user_to_prepare(user_id, collection):

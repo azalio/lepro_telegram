@@ -14,7 +14,6 @@ import util
 
 def create_bot(bot_token):
     return telepot.Bot(bot_token)
-    # return telepot.Bot(bot_token)
 
 
 def get_user_oauth(chat_id, client_id, bot):
@@ -28,7 +27,6 @@ def send_message(data, message_type, bot, chat_id=12452435):
         if message_type == 'text':
             chunks = util.split_text_to_chanks(data, 4095, [])
             for chunk in chunks:
-                # print(len(chunk))
                 bot.sendMessage(chat_id, chunk)
         if message_type == 'photo':
             with open(data, 'r') as f:
@@ -40,8 +38,14 @@ def send_message(data, message_type, bot, chat_id=12452435):
         # print(data)
         time.sleep(sleep)
         return send_message(data, message_type, bot, chat_id)
+    except telepot.exception.BotWasBlockedError as exp:
+        config.logger.exception("Error: User blocked bot".format(exp))
+        return 'ban'
     except requests.exceptions.ReadTimeout as exp:
         config.logger.exception("Error: Read Timeout")
+        return False
+    except requests.exceptions.ConnectionError as exp:
+        config.logger.exception("Error: Conn error {}".format(exp))
         return False
     except telepot.exception.TelegramError as exp:
         config.logger.exception("Error: TelegramError")
