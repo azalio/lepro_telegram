@@ -67,7 +67,7 @@ def main():
                         data = post[key][0]['href']
                         send_to_user = send_to_user + data
                 if send_to_user:
-                    time.sleep(4)
+                    time.sleep(5)
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         if result == 'ban':
