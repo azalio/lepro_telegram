@@ -52,6 +52,7 @@ def send_message(data, message_type, bot, chat_id=12452435):
 
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
+    config.logger.error(msg)
     try:
         last_name = msg.get('chat', {}).get('last_name', '')
         first_name = msg.get('chat', {}).get('first_name', '')

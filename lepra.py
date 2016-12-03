@@ -3,6 +3,7 @@
 import requests
 import os
 import sys
+import time
 
 import config
 import mongo
@@ -51,11 +52,11 @@ def main():
             for post in feed[key]:
                 send_to_user = ''
                 post_id = post['id']
-                config.logger.debug("User id: {}".format(chat_id))
-                config.logger.debug("Post id: {}".format(post_id))
+                config.logger.error("User id: {}".format(chat_id))
+                config.logger.error("Post id: {}".format(post_id))
                 read = mongo.check_lepra_post(post_id, chat_id, posts_collection)
                 if read:
-                    config.logger.debug("User {} already read post: {}".format(chat_id, post_id))
+                    config.logger.error("User {} already read post: {}".format(chat_id, post_id))
                     continue
                 for key in post:
                     if key == 'body':
@@ -66,6 +67,7 @@ def main():
                         data = post[key][0]['href']
                         send_to_user = send_to_user + data
                 if send_to_user:
+                    time.sleep(4)
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
