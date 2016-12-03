@@ -70,7 +70,7 @@ def main():
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         if result == 'ban':
-                            user_to_prepare(chat_id, collection)
+                            mongo.user_to_prepare(chat_id, collection)
                             continue
                         else:
                             mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
