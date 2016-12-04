@@ -31,14 +31,17 @@ def send_message(data, message_type, bot, chat_id=12452435):
         if message_type == 'photo':
             with open(data, 'r') as f:
                 bot.sendPhoto(chat_id, f)
-    except telepot.exception.TooManyRequestsError:
+    except telepot.exception.TooManyRequestsError as exp:
         config.logger.exception("Error: Too Many Requests")
         sleep = exp[-1]['parameters']['retry_after']
-        config.logger.debug("Too fast, sleeping: {}".format(sleep))
+        config.logger.error("Too fast, sleeping: {}".format(sleep))
         time.sleep(sleep)
         return send_message(data, message_type, bot, chat_id)
     except telepot.exception.BotWasBlockedError:
-        config.logger.exception("Error: User blocked bot")
+        config.logger.error("Error: user_id: {} blocked bot".format(chat_id))
+        if message_type == 'text':
+            config.logger.error(data)
+        config.logger.exception("Error: message_type: ".format(message_type))
         return 'ban'
     except requests.exceptions.ReadTimeout:
         config.logger.exception("Error: Read Timeout")
@@ -103,6 +106,7 @@ def handle(msg):
             get_user_oauth(chat_id, client_id, bot)
         else:
             text = u"Все готово для работы с ботом.\n" \
+                   u"Данные скоро начнут поступать.\n" \
                    u"Дополнительные настройки можно увидеть, выполнив команду:\n"\
                    u"/settings"
             send_message(text, 'text', bot, chat_id)

@@ -12,7 +12,7 @@ import util
 
 
 def get_feed(oauth, feed_type, threshold_rating):
-    url = 'https://leprosorium.ru/api/feeds/{feed_type}/?per_page=42&' \
+    url = 'https://leprosorium.ru/api/feeds/{feed_type}/?per_page=32&' \
           'threshold_rating={threshold_rating}'.format(feed_type=feed_type,
                                                        threshold_rating=threshold_rating)
     oauth = 'Bearer ' + oauth
@@ -66,10 +66,13 @@ def main():
                         data = post[key][0]['href']
                         send_to_user = send_to_user + data
                 if send_to_user:
-                    time.sleep(5)
+                    config.logger.error("Send post {} to user {}".format(post_id, chat_id))
+                    time.sleep(7)
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
+                        config.logger.error("result is: {}".format(result))
                         if result == 'ban':
+                            config.logger.error("User {} blocked bot, move to prepare".format(chat_id))
                             mongo.user_to_prepare(chat_id, collection)
                             continue
                         else:
