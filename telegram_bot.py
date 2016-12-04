@@ -48,14 +48,18 @@ def send_message(data, message_type, bot, chat_id=12452435):
         except Exception:
             pass
         return 'ban'
+    except telepot.exception.TelegramError:
+        config.logger.exception("Error: TelegramError")
+        return False
+    except telepot.exception.BadHTTPResponse:
+        config.logger.exception("Error: Bad HTTP Response:")
+        return False
     except requests.exceptions.ReadTimeout:
         config.logger.exception("Error: Read Timeout")
         return False
     except requests.exceptions.ConnectionError:
         config.logger.exception("Error: Conn error")
         return False
-    except telepot.exception.TelegramError:
-        config.logger.exception("Error: TelegramError")
     else:
         return True
 
@@ -74,16 +78,12 @@ def handle(msg):
         config.logger.exception("Error: Can't update user info {}".format(exp))
     oauth = mongo.check_user_id(chat_id, collection)
     if oauth:
-        # user_exist_and_ok = True
         try:
             entities = msg.get('entities', None)[0]
-            # print(entities)
             if entities:
                 command_type = entities.get('type', None)
-                # print(command_type)
                 if command_type == 'bot_command':
                     result = catch_bot_command(msg, chat_id)
-                    # print(result)
         except TypeError as exp:
             config.logger.exception("Error: TypeError")
             text = u"К сожалению, я не настолько умный.\nЯ понимаю только "\
@@ -93,13 +93,10 @@ def handle(msg):
         except Exception as exp:
             config.logger.exception("Error: message analysis")
     else:
-        # user_exist_and_ok = False
         try:
             entities = msg.get('entities', None)[0]
-            # print(entities)
             if entities:
                 command_type = entities.get('type', None)
-                # print(command_type)
                 if command_type == 'bot_command':
                     result = catch_bot_command(msg, chat_id)
                     if result:
@@ -180,7 +177,6 @@ def catch_bot_command(msg, chat_id):
             /threshold_rating_hardcore - 0
             /threshold_rating_nightmare - all
             """
-            # print(text)
             send_message(data, 'text', bot, chat_id)
             result['command'] = command_list[0]
         elif command in settings_command:
@@ -213,7 +209,6 @@ if __name__ == '__main__':
 
     bot = create_bot(KEY)
     bot.message_loop(handle)
-    # print 'Listening ...'
 
 # Keep the program running.
     while 1:

@@ -16,11 +16,7 @@ class MLStripper(HTMLParser):
                 if attr[0] == 'href':
                     self.add_to_data(attr[1])
                     # self.fed.append(url)
-        elif tag == 'img':
-            for attr in attrs:
-                if attr[0] == 'src':
-                    self.add_to_data(attr[1])
-        elif tag == 'source':
+        elif tag == 'img' or tag == 'source':
             for attr in attrs:
                 if attr[0] == 'src':
                     self.add_to_data(attr[1])

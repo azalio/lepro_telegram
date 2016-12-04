@@ -33,19 +33,17 @@ def get_feed(oauth, feed_type, threshold_rating):
 
 
 def main():
-    # print(collection)
     users = mongo.get_users(collection)
-    # print(type(bot))
     for user in users:
-        # print(user)
         chat_id = user['user_id']
         oauth = user['lepra_oauth']
         feed_type = user.get('feed_type', 'main')
         threshold_rating = user.get('threshold_rating', 'easy')
         feed = get_feed(oauth, feed_type, threshold_rating)
-        # print(feed)
         if feed == 'deny':
             telegram_bot.get_user_oauth(chat_id, client_id, bot)
+            config.logger.error("Some auth error. User {}, move to prepare".format(chat_id))
+            mongo.user_to_prepare(chat_id, collection)
             continue
         for key in feed:
             for post in feed[key]:

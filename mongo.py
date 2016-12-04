@@ -4,11 +4,8 @@ import datetime
 
 
 def mongo_connect(host, port, db):
-    # client = MongoClient('localhost', 27017)
     client = MongoClient(host, port)
     db = client[db]
-    # collection = db[collection]
-    # return client, db, collection
     return db
 
 
