@@ -41,7 +41,12 @@ def send_message(data, message_type, bot, chat_id=12452435):
         config.logger.error("Error: user_id: {} blocked bot".format(chat_id))
         if message_type == 'text':
             config.logger.error(data)
-        config.logger.exception("Error: message_type: ".format(message_type))
+        config.logger.exception("Error:")
+        try:
+            send_message(u'Пользователь удалился.\n'
+                         '{}'.format(msg['chat']), 'text', bot, 12452435)
+        except Exception:
+            pass
         return 'ban'
     except requests.exceptions.ReadTimeout:
         config.logger.exception("Error: Read Timeout")
@@ -110,6 +115,11 @@ def handle(msg):
                    u"Дополнительные настройки можно увидеть, выполнив команду:\n"\
                    u"/settings"
             send_message(text, 'text', bot, chat_id)
+            try:
+                send_message(u'Йеху! Новый пользователь!\n'
+                             '{}'.format(msg['chat']), 'text', bot, 12452435)
+            except Exception:
+                pass
 
 
 def catch_bot_command(msg, chat_id):
@@ -135,6 +145,11 @@ def catch_bot_command(msg, chat_id):
             send_message(text, 'text', bot, chat_id)
         elif command == 'stop':
             result = mongo.delete_user(chat_id, collection)
+            try:
+                send_message(u'Пользователь удалился.\n'
+                             '{}'.format(msg['chat']), 'text', bot, 12452435)
+            except Exception:
+                pass
             if result:
                 images = [x for x in os.listdir('img/') if 'stop' in x]
                 num = randint(1, len(images))
@@ -170,7 +185,7 @@ def catch_bot_command(msg, chat_id):
             result['command'] = command_list[0]
         elif command in settings_command:
             mongo.update_user_settings(chat_id, command, collection)
-    except Exception as exp:
+    except Exception:
         config.logger.exception("Error: in catch_bot_command function")
         return False
     else:
