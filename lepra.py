@@ -25,10 +25,11 @@ def get_feed(oauth, feed_type, threshold_rating):
     if result.status_code == 200:
         return result.json()
     elif result.status_code == 403 or result.status_code == 400:
+        config.logger.exception("Getting deny status code: oauth = {}, status_code = {}".format(oauth, result.status_code))
         result = 'deny'
         return result
     else:
-        config.logger.debug("Error: in status_code: {}".format(result.status_code))
+        config.logger.exception("Error: in status_code: {}".format(result.status_code))
         return False
 
 
@@ -40,6 +41,8 @@ def main():
         feed_type = user.get('feed_type', 'main')
         threshold_rating = user.get('threshold_rating', 'easy')
         feed = get_feed(oauth, feed_type, threshold_rating)
+        if not feed:
+            continue
         if feed == 'deny':
             telegram_bot.get_user_oauth(chat_id, client_id, bot)
             config.logger.error("Some auth error. User {}, move to prepare".format(chat_id))
@@ -65,7 +68,7 @@ def main():
                         send_to_user = send_to_user + data
                 if send_to_user:
                     config.logger.error("Send post {} to user {}".format(post_id, chat_id))
-                    time.sleep(7)
+                    time.sleep(1)
                     result = telegram_bot.send_message(send_to_user, 'text', bot, chat_id)
                     if result:
                         config.logger.error("result is: {}".format(result))
