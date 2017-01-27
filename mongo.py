@@ -57,6 +57,13 @@ def user_to_prepare(user_id, collection):
 
 
 def update_user_settings(user_id, command, collection):
+    """
+    Update user settings
+    :param user_id:
+    :param command: feed_type_mixed -> "feed_type" : "mixed"
+    :param collection:
+    :return:
+    """
     command_list = command.split('_')
     json_data = {command_list[0] + '_' + command_list[1]: command_list[2]}
     result = collection.update_one({"user_id": user_id},

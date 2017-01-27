@@ -11,6 +11,23 @@ import telegram_bot
 import util
 
 
+def markpost_as_read(post_id, oauth):
+    url = 'https://leprosorium.ru/api/posts/{post_id}/view/'.format(post_id)
+    oauth = 'Bearer ' + oauth
+    headers = {"Authorization": oauth, "Content-Type": "application/json"}
+    try:
+        result = requests.post(url, headers=headers)
+        if result.status_code == 200:
+            config.logger.error("Mark post {post_id} as read".format(post_id))
+            return True
+        else:
+            config.logger.error("Can't mark post {post_id} as read".format(post_id))
+            return False
+    except Exception as exp:
+        config.logger.exception("Can't get url {}".format(exp))
+        return False
+
+
 def get_feed(oauth, feed_type, threshold_rating):
     url = 'https://leprosorium.ru/api/feeds/{feed_type}/?per_page=32&' \
           'threshold_rating={threshold_rating}'.format(feed_type=feed_type,
@@ -40,6 +57,7 @@ def main():
         oauth = user['lepra_oauth']
         feed_type = user.get('feed_type', 'main')
         threshold_rating = user.get('threshold_rating', 'easy')
+        markpost_read = user.get('markpost_read', 'false')
         feed = get_feed(oauth, feed_type, threshold_rating)
         if not feed:
             continue
@@ -78,6 +96,8 @@ def main():
                             continue
                         else:
                             mongo.add_to_lepra_posts(post['id'], chat_id, posts_collection)
+                            if markpost_read == 'true':
+                                markpost_as_read(post_id, oauth)
 
 
 if __name__ == '__main__':
