@@ -12,16 +12,16 @@ import util
 
 
 def markpost_as_read(post_id, oauth):
-    url = 'https://leprosorium.ru/api/posts/{post_id}/view/'.format(post_id)
+    url = 'https://leprosorium.ru/api/posts/{post_id}/view/'.format(post_id=post_id)
     oauth = 'Bearer ' + oauth
     headers = {"Authorization": oauth, "Content-Type": "application/json"}
     try:
         result = requests.post(url, headers=headers)
         if result.status_code == 200:
-            config.logger.error("Mark post {post_id} as read".format(post_id))
+            config.logger.error("Mark post {post_id} as read".format(post_id=post_id))
             return True
         else:
-            config.logger.error("Can't mark post {post_id} as read".format(post_id))
+            config.logger.error("Can't mark post {post_id} as read".format(post_id=post_id))
             return False
     except Exception as exp:
         config.logger.exception("Can't get url {}".format(exp))
