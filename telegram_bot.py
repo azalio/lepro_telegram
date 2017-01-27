@@ -125,7 +125,7 @@ def catch_bot_command(msg, chat_id):
                         'threshold_rating_easy', 'threshold_rating_medium',
                         'threshold_rating_normal', 'threshold_rating_hard',
                         'threshold_rating_hardcore', 'threshold_rating_nightmare',
-                        'markpost_read_true, markpost_read_false']
+                        'markpost_read_true', 'markpost_read_false']
     try:
         command_list = msg['text'].split()
         command = command_list[0].lower().lstrip('/')
@@ -179,8 +179,7 @@ def catch_bot_command(msg, chat_id):
             /threshold_rating_nightmare - all
 
 Настройка статуса постов:
-            /markpost_read_true - все посты, которые будут присылаться вам,
-                                  будут помечаться прочитанными.
+            /markpost_read_true - все посты, которые будут присылаться вам, будут помечаться прочитанными.
             /markpost_read_false - отменяет отметку "прочитано" для постов.
             """
             send_message(data, 'text', bot, chat_id)
